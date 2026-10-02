@@ -179,19 +179,25 @@
   }
 
   @media (max-width: 480px){
-    .task-input-row{
-      grid-template-columns:minmax(0, 1fr) auto;
-      gap:8px;
-    }
-    .task-input-row > :nth-child(2){
-      grid-column:1 / -1;
-    }
-    .task-input-row .btn-primary{
-      white-space:nowrap;
-      padding-left:13px;
-      padding-right:13px;
-    }
+  .task-input-row{
+    grid-template-columns: minmax(0, 1fr) 68px auto;
+    gap: 7px;
   }
+
+  .task-input-row > :nth-child(2){
+    grid-column: auto;
+  }
+
+  .task-input-row .btn-primary{
+    white-space: nowrap;
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+
+  #taskEst{
+    width: 68px;
+  }
+}
   .btn{
     all:unset;
     box-sizing:border-box;
@@ -523,15 +529,11 @@ async function loadHistory(){
 async function appendHistory(entry){
   const hist = await loadHistory();
 
-  // 同じ週の記録がすでにあれば追加せず、最新の結果で上書きする
-  const existingIndex = hist.findIndex(h => h.date === entry.date);
-  if(existingIndex >= 0){
-    hist[existingIndex] = entry;
-  }else{
-    hist.push(entry);
-  }
+  // 同じ週の記録はすべて削除して、最新の1件だけ保存する
+  const otherWeeks = hist.filter(h => h.date !== entry.date);
+  otherWeeks.push(entry);
+  const trimmed = otherWeeks.slice(-12);
 
-  const trimmed = hist.slice(-12);
   try{
     localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
   }catch(e){
