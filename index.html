@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ツミカサネ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --paper-line:#DCD4C2;
+    --card:#FCFAF5;
+    --ink:#2B2A28;
+    --ink-soft:#6E6759;
+    --indigo:#3B4A6B;
+    --indigo-deep:#28334A;
+    --gold:#C99A3E;
+    --teal:#4F8577;
+    --brick:#A6503D;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(var(--paper-line) 1px, transparent 1px);
+    background-size:22px 22px;
+    background-color:var(--paper);
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,.serif{font-family:'Zen Kaku Gothic New', sans-serif;}
+  .app{
+    max-width:640px;
+    margin:0 auto;
+    padding:28px 20px 60px;
+  }
+  .screen-hidden{display:none !important;}
+
+  .home-screen{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding-top:56px;
+    gap:38px;
+  }
+  .home-screen .card{
+    width:100%;
+    text-align:left;
+    align-self:stretch;
+  }
+  .home-title h1{
+    font-size:30px;
+    margin:0 0 6px;
+    color:var(--indigo-deep);
+    font-weight:700;
+    letter-spacing:.02em;
+  }
+  .home-title p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:13.5px;
+  }
+  .menu-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 82px);
+    justify-content:center;
+    gap:26px;
+  }
+  .tab-btn{
+    all:unset;
+    cursor:pointer;
+    box-sizing:border-box;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+    width:82px;
+    height:82px;
+    border-radius:50%;
+    background:var(--card);
+    border:1.5px solid var(--paper-line);
+    color:var(--ink-soft);
+    text-align:center;
+    transition:background .15s, color .15s, border-color .15s, transform .15s;
+  }
+  .tab-btn .tab-icon{font-size:22px; line-height:1; margin-bottom:6px;}
+  .tab-btn .tab-label{font-size:10.5px; letter-spacing:.03em; line-height:1;}
+  .tab-btn.active{
+    background:var(--indigo);
+    color:var(--paper);
+    border-color:var(--indigo-deep);
+    font-weight:700;
+    transform:scale(1.06);
+  }
+  .tab-btn:hover{
+    background:#EFEAE0;
+    border-color:var(--indigo);
+    color:var(--indigo-deep);
+  }
+
+  .detail-screen{min-width:0;}
+  .back-btn{
+    all:unset;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    color:var(--indigo-deep);
+    font-weight:700;
+    margin-bottom:18px;
+    padding:6px 4px;
+  }
+  .back-btn:hover{color:var(--indigo);}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    padding:24px;
+    min-height:420px;
+  }
+  .detail-screen .card{display:none;}
+  .detail-screen .card.active{display:block;}
+  .card h2{
+    font-size:19px;
+    margin:0 0 4px;
+    color:var(--ink);
+    text-align:center;
+  }
+  .card .sub{
+    color:var(--ink-soft);
+    font-size:12.5px;
+    margin:0 0 20px;
+    text-align:center;
+  }
+  .week-range{
+    color:var(--indigo-deep);
+    font-size:13px;
+    font-weight:700;
+    text-align:center;
+    margin:0 0 10px;
+    letter-spacing:.02em;
+  }
+
+  label.field-label{
+    display:block;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+  }
+  input[type=text], input[type=number]{
+    width:100%;
+    font-family:inherit;
+    font-size:14px;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    padding:9px 10px;
+    outline:none;
+  }
+  input:focus{border-color:var(--indigo);}
+
+  .task-input-row{
+    display:grid;
+    grid-template-columns:2fr 1fr auto;
+    gap:10px;
+    align-items:end;
+    margin-bottom:18px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--paper-line);
+  }
+  .btn{
+    all:unset;
+    box-sizing:border-box;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    padding:10px 16px;
+    border-radius:var(--radius);
+    text-align:center;
+    transition:background .15s, opacity .15s;
+  }
+  .btn-primary{background:var(--indigo); color:var(--paper);}
+  .btn-primary:hover{background:var(--indigo-deep);}
+  .btn-primary:disabled{opacity:.4; cursor:not-allowed;}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--indigo);
+    color:var(--indigo-deep);
+  }
+  .btn-ghost:hover{background:#EAEEF5;}
+  .btn-ghost:disabled{opacity:.35; cursor:not-allowed; border-color:var(--ink-soft); color:var(--ink-soft);}
+  .block-btn{display:block; width:100%; margin-top:16px;}
+
+  .task-list{list-style:none; margin:0; padding:0;}
+  .task-list li{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:11px 0;
+    border-bottom:1px dashed var(--paper-line);
+    font-size:14px;
+    flex-wrap:wrap;
+  }
+  .task-list li:last-child{border-bottom:none;}
+  .task-name{font-weight:500; flex:1 1 auto; min-width:100px; overflow-wrap:anywhere;}
+  .task-times{color:var(--ink-soft); font-size:12.5px; white-space:nowrap;}
+  .done-btn{
+    all:unset;
+    cursor:pointer;
+    flex:0 0 auto;
+    font-size:12.5px;
+    font-weight:700;
+    padding:7px 14px;
+    border-radius:var(--radius);
+    text-align:center;
+    border:1.5px solid var(--teal);
+    color:var(--teal);
+    background:transparent;
+    transition:background .15s, color .15s;
+  }
+  .done-btn.is-done{
+    background:var(--teal);
+    color:var(--paper);
+    border-color:var(--teal);
+  }
+  .done-btn:hover:not(.is-done){background:#EAF1EE;}
+  .del-btn{
+    all:unset;
+    cursor:pointer;
+    color:var(--brick);
+    font-size:16px;
+    line-height:1;
+    padding:2px 4px;
+  }
+  .empty-note{color:var(--ink-soft); font-size:13px; padding:8px 0;}
+
+  .reward-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .reward-num{
+    flex:0 0 22px;
+    height:22px;
+    border:1px solid var(--gold);
+    color:var(--gold);
+    font-size:12px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+  }
+
+  /* Analysis */
+  .analysis-btn-row{margin-bottom:22px;}
+  .analysis-result{display:none; text-align:center;}
+  .analysis-result.show{display:block;}
+  .donut-wrap{position:relative; width:180px; height:180px; margin:0 auto 18px;}
+  .donut-wrap svg{transform:rotate(-90deg);}
+  .donut-center{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+  }
+  .donut-center .pct{font-size:30px; font-weight:700; color:var(--indigo-deep); font-family:'Zen Kaku Gothic New', sans-serif;}
+  .donut-center .pct-label{font-size:11px; color:var(--ink-soft);}
+  .stat-line{font-size:13px; color:var(--ink-soft); margin-bottom:14px;}
+  .message{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:18px;
+    color:var(--teal);
+    font-weight:700;
+  }
+  .history-list{list-style:none; margin:0; padding:0;}
+  .history-list li{display:flex; justify-content:space-between; gap:10px; font-size:12.5px; color:var(--ink-soft); padding:6px 0; border-bottom:1px dashed var(--paper-line);}
+  .history-list li:last-child{border-bottom:none;}
+  .history-list li b{color:var(--indigo-deep); font-weight:700;}
+
+  /* Roulette */
+  .spin-count{
+    text-align:center;
+    font-size:13px;
+    font-weight:700;
+    color:var(--gold);
+    margin:0 0 18px;
+  }
+  .wheel-area{display:flex; flex-direction:column; align-items:center;}
+  .wheel-pointer{
+    width:0; height:0;
+    border-left:9px solid transparent;
+    border-right:9px solid transparent;
+    border-top:16px solid var(--brick);
+    margin-bottom:-4px;
+    z-index:3;
+  }
+  .wheel-svg-wrap{width:230px; height:230px;}
+  .roulette-btns{display:flex; gap:12px; margin-top:20px;}
+  .roulette-result{
+    margin-top:18px;
+    min-height:24px;
+    text-align:center;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:16px;
+    color:var(--indigo-deep);
+    font-weight:700;
+  }
+
+  @media (max-width:640px){
+    .home-screen{padding-top:34px; gap:28px;}
+    .menu-grid{gap:18px; grid-template-columns:repeat(3, 70px);}
+    .tab-btn{width:70px; height:70px;}
+    .tab-btn .tab-icon{font-size:19px;}
+    .tab-btn .tab-label{font-size:9.5px;}
+    .task-input-row{grid-template-columns:1fr 1fr; grid-template-areas:"name name" "est btn";}
+  }
+</style>
+
+  <meta name="theme-color" content="#3B4A6B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ツミカサネ">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+<div class="app">
+  <div class="home-screen" id="homeScreen">
+    <header class="home-title">
+      <h1>ツミカサネ</h1>
+      <p>今週のがんばりを見える化して、自分にご褒美を。</p>
+    </header>
+    <nav class="menu-grid">
+      <a class="tab-btn" href="#tasks" data-tab="tasks">
+        <span class="tab-icon">📝</span><span class="tab-label">タスク</span>
+      </a>
+      <a class="tab-btn" href="#actual" data-tab="actual">
+        <span class="tab-icon">⏱️</span><span class="tab-label">できた！</span>
+      </a>
+      <a class="tab-btn" href="#roulette" data-tab="roulette">
+        <span class="tab-icon">🎡</span><span class="tab-label">ルーレット</span>
+      </a>
+      <a class="tab-btn" href="#analysis" data-tab="analysis">
+        <span class="tab-icon">📊</span><span class="tab-label">分析</span>
+      </a>
+      <a class="tab-btn" href="#rewards" data-tab="rewards">
+        <span class="tab-icon">🎁</span><span class="tab-label">ご褒美</span>
+      </a>
+      <a class="tab-btn" href="#achieve" data-tab="achieve">
+        <span class="tab-icon">🏆</span><span class="tab-label">ログ</span>
+      </a>
+    </nav>
+
+    <!-- タスク（ホーム画面に常時表示） -->
+    <section class="card" id="panel-tasks">
+      <h2>今週のタスク</h2>
+      <p class="week-range" id="weekRange"></p>
+      <p class="sub">タスク名と見積もり時間（分）を入力しよう。</p>
+
+      <div class="task-input-row">
+        <div>
+          <label class="field-label">タスク名</label>
+          <input type="text" id="taskName" placeholder="例：資料作成">
+        </div>
+        <div>
+          <label class="field-label">見積もり（分）</label>
+          <input type="number" id="taskEst" min="0" placeholder="分">
+        </div>
+        <button class="btn btn-primary" id="addTaskBtn">＋ 追加</button>
+      </div>
+
+      <ul class="task-list" id="taskList"></ul>
+      <button class="btn btn-ghost block-btn" id="newWeekBtn" type="button">新しい週を始める（今週のタスクをリセット）</button>
+    </section>
+  </div>
+
+  <div class="detail-screen screen-hidden" id="detailScreen">
+    <button class="back-btn" id="backBtn" type="button">← もどる</button>
+
+    <!-- ご褒美設定 -->
+    <section class="card panel" id="panel-rewards">
+      <h2>ご褒美リスト</h2>
+      <p class="sub">達成したときのご褒美を5つ決めておこう。ルーレットで使われます。</p>
+      <div id="rewardRows"></div>
+    </section>
+
+    <!-- 実績入力 -->
+    <section class="card panel" id="panel-actual">
+      <h2>できた！</h2>
+      <p class="sub">できたタスクは「できた！」を押してチェックしよう。</p>
+      <ul class="task-list" id="actualList"></ul>
+      <a class="btn btn-primary block-btn" id="goRouletteBtn" href="#roulette" style="display:none;">🎡 ルーレットへ行く</a>
+    </section>
+
+    <!-- 分析 -->
+    <section class="card panel" id="panel-analysis">
+      <h2>今週の分析</h2>
+      <p class="sub">今週のタスクがいくつ達成できたか見てみよう。</p>
+      <div class="analysis-btn-row">
+        <button class="btn btn-primary" id="analyzeBtn">分析する</button>
+      </div>
+      <div class="analysis-result" id="analysisResult">
+        <div class="donut-wrap">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle cx="90" cy="90" r="78" fill="none" stroke="#E4DECE" stroke-width="16"/>
+            <circle id="donutProgress" cx="90" cy="90" r="78" fill="none" stroke="#4F8577" stroke-width="16" stroke-linecap="round" stroke-dasharray="490" stroke-dashoffset="490" style="transition:stroke-dashoffset 1s ease;"/>
+          </svg>
+          <div class="donut-center">
+            <div class="pct" id="pctText">0%</div>
+            <div class="pct-label">達成率</div>
+          </div>
+        </div>
+        <div class="stat-line" id="statLine"></div>
+        <div class="message" id="messageText"></div>
+      </div>
+    </section>
+
+    <!-- 達成 -->
+    <section class="card panel" id="panel-achieve">
+      <h2>ログ</h2>
+      <p class="sub">週ごとの日付と達成状況を振り返ろう。</p>
+      <ul class="history-list" id="achieveList"></ul>
+    </section>
+
+    <!-- ルーレット -->
+    <section class="card panel" id="panel-roulette">
+      <h2>ご褒美ルーレット</h2>
+      <p class="sub">スピンしてストップ、矢印が指したご褒美をゲット。</p>
+      <p class="spin-count" id="spinCount"></p>
+      <div class="wheel-area">
+        <div class="wheel-pointer"></div>
+        <div class="wheel-svg-wrap">
+          <svg id="wheelSvg" width="230" height="230" viewBox="0 0 230 230"></svg>
+        </div>
+        <div class="roulette-btns">
+          <button class="btn btn-primary" id="spinBtn">スピン</button>
+          <button class="btn btn-ghost" id="stopBtn" disabled>ストップ</button>
+        </div>
+        <div class="roulette-result" id="rouletteResult"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+// ---------- State ----------
+let tasks = []; // {id, name, est, done}
+let rewards = ['', '', '', '', ''];
+let taskIdSeq = 1;
+let spinsAvailable = 0;
+
+// ---------- Persistent storage ----------
+const STATE_KEY = 'tsumikasane-state';
+const HISTORY_KEY = 'tsumikasane-history';
+// GitHub Pagesなどの通常のブラウザ環境で使えるlocalStorageに保存します。
+
+async function loadState(){
+  try{
+    const value = localStorage.getItem(STATE_KEY);
+    if(value){
+      const data = JSON.parse(value);
+      if(Array.isArray(data.tasks)) tasks = data.tasks;
+      if(Array.isArray(data.rewards)) rewards = data.rewards;
+      if(typeof data.taskIdSeq === 'number') taskIdSeq = data.taskIdSeq;
+      if(typeof data.spinsAvailable === 'number') spinsAvailable = data.spinsAvailable;
+    }
+  }catch(e){
+    console.error('データの読み込みに失敗しました', e);
+  }
+}
+
+async function saveState(){
+  try{
+    localStorage.setItem(
+      STATE_KEY,
+      JSON.stringify({tasks, rewards, taskIdSeq, spinsAvailable})
+    );
+  }catch(e){
+    console.error('保存に失敗しました', e);
+  }
+}
+
+async function loadHistory(){
+  try{
+    const value = localStorage.getItem(HISTORY_KEY);
+    if(value){
+      const data = JSON.parse(value);
+      if(Array.isArray(data)) return data;
+    }
+  }catch(e){
+    console.error('履歴の読み込みに失敗しました', e);
+  }
+  return [];
+}
+
+async function appendHistory(entry){
+  const hist = await loadHistory();
+  hist.push(entry);
+  const trimmed = hist.slice(-12);
+  try{
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+  }catch(e){
+    console.error('記録の保存に失敗しました', e);
+  }
+  return trimmed;
+}
+
+function renderAchieveList(hist){
+  const list = document.getElementById('achieveList');
+  if(!hist || hist.length === 0){
+    list.innerHTML = '<li class="empty-note">まだ記録がありません。「分析」で今週の結果をチェックしよう。</li>';
+    return;
+  }
+  list.innerHTML = '';
+  hist.slice().reverse().forEach(h=>{
+    const badge = h.done === h.total ? '🎉 達成' : `${h.pct}%`;
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${escapeHtml(h.date)}</span><span><b>${h.done}</b> / ${h.total}個（${badge}）</span>`;
+    list.appendChild(li);
+  });
+}
+
+// ---------- Screens ----------
+const validTabs = ['tasks','rewards','actual','analysis','achieve','roulette'];
+const detailTabs = ['rewards','actual','analysis','achieve','roulette'];
+const homeScreen = document.getElementById('homeScreen');
+const detailScreen = document.getElementById('detailScreen');
+const backBtn = document.getElementById('backBtn');
+
+function showHome(){
+  homeScreen.classList.remove('screen-hidden');
+  detailScreen.classList.add('screen-hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab === 'tasks'));
+}
+function showDetail(name){
+  homeScreen.classList.add('screen-hidden');
+  detailScreen.classList.remove('screen-hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.detail-screen .panel').forEach(p=>p.classList.toggle('active', p.id === 'panel-'+name));
+  if(name === 'achieve'){
+    loadHistory().then(renderAchieveList);
+  }
+}
+function routeFromHash(){
+  const name = location.hash.replace('#','');
+  if(detailTabs.includes(name)) showDetail(name);
+  else showHome();
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const tab = btn.dataset.tab;
+    if(tab === 'tasks'){
+      history.replaceState(null, '', location.pathname + location.search);
+      showHome();
+    } else {
+      history.replaceState(null, '', '#'+tab);
+      showDetail(tab);
+    }
+  });
+});
+document.getElementById('goRouletteBtn').addEventListener('click', (e)=>{
+  e.preventDefault();
+  history.replaceState(null, '', '#roulette');
+  showDetail('roulette');
+});
+backBtn.addEventListener('click', ()=>{
+  history.replaceState(null, '', location.pathname + location.search);
+  showHome();
+});
+window.addEventListener('hashchange', routeFromHash);
+routeFromHash();
+
+// ---------- Tasks ----------
+const taskNameInput = document.getElementById('taskName');
+const taskEstInput = document.getElementById('taskEst');
+const taskList = document.getElementById('taskList');
+
+function renderTasks(){
+  taskList.innerHTML = '';
+  if(tasks.length === 0){
+    taskList.innerHTML = '<li class="empty-note">まだタスクがありません。上のフォームから追加しよう。</li>';
+    return;
+  }
+  tasks.forEach(t=>{
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span class="task-name">${escapeHtml(t.name)}</span>
+      <span class="task-times">見積もり ${t.est}分</span>
+      <button class="del-btn" data-id="${t.id}" title="削除">×</button>
+    `;
+    taskList.appendChild(li);
+  });
+  taskList.querySelectorAll('.del-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      tasks = tasks.filter(t=>t.id !== Number(b.dataset.id));
+      renderTasks();
+      renderActualList();
+      saveState();
+    });
+  });
+}
+
+const actualList = document.getElementById('actualList');
+function renderActualList(){
+  actualList.innerHTML = '';
+  if(tasks.length === 0){
+    actualList.innerHTML = '<li class="empty-note">タスクがありません。まず「タスク」画面で登録しよう。</li>';
+    return;
+  }
+  tasks.forEach(t=>{
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span class="task-name">${escapeHtml(t.name)}</span>
+      <span class="task-times">見積もり ${t.est}分</span>
+      <button class="done-btn ${t.done ? 'is-done' : ''}" data-id="${t.id}">${t.done ? '✓ できた！' : 'できた！'}</button>
+    `;
+    actualList.appendChild(li);
+  });
+  actualList.querySelectorAll('.done-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const t = tasks.find(t=>t.id === Number(b.dataset.id));
+      if(!t) return;
+      t.done = !t.done;
+      spinsAvailable = Math.max(0, spinsAvailable + (t.done ? 1 : -1));
+      renderActualList();
+      updateSpinUI();
+      saveState();
+    });
+  });
+}
+
+document.getElementById('addTaskBtn').addEventListener('click', ()=>{
+  const name = taskNameInput.value.trim();
+  const est = Number(taskEstInput.value) || 0;
+  if(!name){
+    taskNameInput.focus();
+    return;
+  }
+  tasks.push({id: taskIdSeq++, name, est, done: false});
+  taskNameInput.value = '';
+  taskEstInput.value = '';
+  taskNameInput.focus();
+  renderTasks();
+  renderActualList();
+  saveState();
+});
+
+document.getElementById('newWeekBtn').addEventListener('click', ()=>{
+  if(tasks.length === 0) return;
+  if(!confirm('今週のタスクをリセットして、新しい週を始めますか？（記録は分析画面に残ります）')) return;
+  tasks = [];
+  renderTasks();
+  renderActualList();
+  saveState();
+});
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ---------- Rewards ----------
+const rewardRows = document.getElementById('rewardRows');
+function buildRewardRows(){
+  rewardRows.innerHTML = '';
+  for(let i=0;i<5;i++){
+    const row = document.createElement('div');
+    row.className = 'reward-row';
+    const placeholder = i === 0 ? '例：カフェに行く' : '';
+    row.innerHTML = `
+      <div class="reward-num">${i+1}</div>
+      <input type="text" data-idx="${i}" placeholder="${placeholder}" value="${escapeHtml(rewards[i] || '')}">
+    `;
+    rewardRows.appendChild(row);
+  }
+  rewardRows.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      rewards[Number(inp.dataset.idx)] = inp.value;
+      drawWheel();
+      saveState();
+    });
+  });
+}
+
+// ---------- Analysis ----------
+const donutProgress = document.getElementById('donutProgress');
+const pctText = document.getElementById('pctText');
+const statLine = document.getElementById('statLine');
+const messageText = document.getElementById('messageText');
+const analysisResult = document.getElementById('analysisResult');
+const CIRC = 2 * Math.PI * 78;
+
+document.getElementById('analyzeBtn').addEventListener('click', async ()=>{
+  const totalTasks = tasks.length;
+  const doneCount = tasks.filter(t=>t.done).length;
+  const pct = totalTasks > 0 ? Math.round((doneCount/totalTasks)*100) : 0;
+  const clamped = Math.max(0, Math.min(pct,100));
+
+  analysisResult.classList.add('show');
+  donutProgress.style.strokeDasharray = CIRC;
+  donutProgress.style.strokeDashoffset = CIRC * (1 - clamped/100);
+
+  animateCount(pct);
+
+  statLine.textContent = totalTasks > 0 ? `${totalTasks}個中 ${doneCount}個のタスクが完了` : '';
+
+  let msg;
+  if(totalTasks === 0){
+    msg = 'タスクを登録すると分析できるよ';
+  } else if(doneCount === totalTasks){
+    msg = `${totalTasks}個中${doneCount}個達成！全部やりきったね！！`;
+  } else if(pct >= 80){
+    msg = `${totalTasks}個中${doneCount}個達成できたね！！`;
+  } else if(pct >= 50){
+    msg = `${totalTasks}個中${doneCount}個達成！着実に進んでるよ`;
+  } else {
+    msg = `${totalTasks}個中${doneCount}個達成。無理せず、また来週コツコツいこう`;
+  }
+  messageText.textContent = msg;
+
+  if(totalTasks > 0){
+    await appendHistory({date: getWeekRangeLabel(), total: totalTasks, done: doneCount, pct});
+  }
+});
+
+function animateCount(target){
+  const start = 0;
+  const duration = 800;
+  const startTime = performance.now();
+  function step(now){
+    const t = Math.min(1, (now-startTime)/duration);
+    const val = Math.round(start + (target-start)*t);
+    pctText.textContent = val + '%';
+    if(t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ---------- Roulette ----------
+const wheelSvg = document.getElementById('wheelSvg');
+const cx = 115, cy = 115, r = 105;
+const colors = ['#3B4A6B', '#C99A3E', '#4F8577', '#A6503D', '#28334A'];
+const textColors = ['#F6F3EC', '#2B2A28', '#F6F3EC', '#F6F3EC', '#F6F3EC'];
+let currentAngle = 0;
+let spinning = false;
+let rafId = null;
+
+function polar(cxp,cyp,radius,angleDeg){
+  const rad = (angleDeg-90) * Math.PI/180;
+  return { x: cxp + radius*Math.cos(rad), y: cyp + radius*Math.sin(rad) };
+}
+
+function truncate(str, n){
+  if(!str) return '';
+  return str.length > n ? str.slice(0,n)+'…' : str;
+}
+
+function getActiveRewards(){
+  return rewards.map(r => (r || '').trim()).filter(Boolean);
+}
+
+function drawWheel(){
+  wheelSvg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const group = document.createElementNS(ns,'g');
+  group.setAttribute('id','wheelGroup');
+  group.setAttribute('transform', `rotate(${currentAngle} ${cx} ${cy})`);
+
+  const active = getActiveRewards();
+  const n = active.length;
+
+  if(n === 0){
+    const circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('cx',cx); circle.setAttribute('cy',cy); circle.setAttribute('r',r);
+    circle.setAttribute('fill', '#E4DECE');
+    group.appendChild(circle);
+    const text = document.createElementNS(ns,'text');
+    text.setAttribute('x', cx);
+    text.setAttribute('y', cy);
+    text.setAttribute('fill', '#6E6759');
+    text.setAttribute('font-size','13');
+    text.setAttribute('font-family',"'Zen Kaku Gothic New', sans-serif");
+    text.setAttribute('font-weight','700');
+    text.setAttribute('text-anchor','middle');
+    text.textContent = 'ご褒美を設定してね';
+    group.appendChild(text);
+    wheelSvg.appendChild(group);
+    updateSpinUI();
+    return;
+  }
+
+  const segAngle = 360 / n;
+  for(let i=0;i<n;i++){
+    const startA = i*segAngle, endA = (i+1)*segAngle;
+    const p1 = polar(cx,cy,r,startA);
+    const p2 = polar(cx,cy,r,endA);
+    const largeArc = segAngle > 180 ? 1 : 0;
+    const path = document.createElementNS(ns,'path');
+    path.setAttribute('d', `M${cx},${cy} L${p1.x},${p1.y} A${r},${r} 0 ${largeArc},1 ${p2.x},${p2.y} Z`);
+    path.setAttribute('fill', colors[i % colors.length]);
+    path.setAttribute('stroke', '#FCFAF5');
+    path.setAttribute('stroke-width','2');
+    group.appendChild(path);
+
+    const mid = i*segAngle + segAngle/2;
+    const labelPos = polar(cx,cy,r*0.62,mid);
+    const text = document.createElementNS(ns,'text');
+    text.setAttribute('x', labelPos.x);
+    text.setAttribute('y', labelPos.y);
+    text.setAttribute('fill', textColors[i % textColors.length]);
+    text.setAttribute('font-size','11');
+    text.setAttribute('font-family',"'Zen Kaku Gothic New', sans-serif");
+    text.setAttribute('font-weight','700');
+    text.setAttribute('text-anchor','middle');
+    text.setAttribute('transform', `rotate(${mid} ${labelPos.x} ${labelPos.y})`);
+    text.textContent = truncate(active[i], 7);
+    group.appendChild(text);
+  }
+
+  const center = document.createElementNS(ns,'circle');
+  center.setAttribute('cx',cx); center.setAttribute('cy',cy); center.setAttribute('r',10);
+  center.setAttribute('fill','#FCFAF5');
+  center.setAttribute('stroke','#28334A');
+  center.setAttribute('stroke-width','2');
+  group.appendChild(center);
+
+  wheelSvg.appendChild(group);
+  updateSpinUI();
+}
+
+function updateSpinUI(){
+  const spinCountEl = document.getElementById('spinCount');
+  if(spinCountEl){
+    spinCountEl.textContent = spinsAvailable > 0
+      ? `🎟️ 残り${spinsAvailable}回スピンできるよ`
+      : 'タスクを「できた！」にするとスピンできるよ';
+  }
+  if(spinBtn){
+    spinBtn.disabled = spinning || spinsAvailable <= 0 || getActiveRewards().length === 0;
+  }
+  const goRouletteBtn = document.getElementById('goRouletteBtn');
+  if(goRouletteBtn){
+    goRouletteBtn.style.display = spinsAvailable > 0 ? 'block' : 'none';
+  }
+}
+
+const spinBtn = document.getElementById('spinBtn');
+const stopBtn = document.getElementById('stopBtn');
+const rouletteResult = document.getElementById('rouletteResult');
+
+spinBtn.addEventListener('click', ()=>{
+  if(spinning || spinsAvailable <= 0) return;
+  spinning = true;
+  spinBtn.disabled = true;
+  stopBtn.disabled = false;
+  rouletteResult.textContent = '';
+  function step(){
+    currentAngle = (currentAngle + 14) % 360;
+    const g = document.getElementById('wheelGroup');
+    if(g) g.setAttribute('transform', `rotate(${currentAngle} ${cx} ${cy})`);
+    if(spinning) rafId = requestAnimationFrame(step);
+  }
+  rafId = requestAnimationFrame(step);
+});
+
+stopBtn.addEventListener('click', ()=>{
+  if(!spinning) return;
+  spinning = false;
+  cancelAnimationFrame(rafId);
+  stopBtn.disabled = true;
+
+  const active = getActiveRewards();
+  if(active.length === 0){ updateSpinUI(); return; }
+  const segAngle = 360 / active.length;
+  const effective = (360 - (currentAngle % 360)) % 360;
+  const idx = Math.min(active.length - 1, Math.floor(effective/segAngle));
+  rouletteResult.textContent = `🎉 「${active[idx]}」に決定！`;
+
+  spinsAvailable = Math.max(0, spinsAvailable - 1);
+  updateSpinUI();
+  saveState();
+});
+
+// ---------- Week range ----------
+function getWeekRangeLabel(){
+  const dayNames = ['日','月','火','水','木','金','土'];
+  const today = new Date();
+  const dow = today.getDay(); // 0=Sun ... 6=Sat
+  const diffToMonday = dow === 0 ? -6 : 1 - dow;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + diffToMonday);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const fmt = d => `${d.getMonth()+1}/${d.getDate()}(${dayNames[d.getDay()]})`;
+  return `${fmt(monday)} 〜 ${fmt(sunday)}`;
+}
+function renderWeekRange(){
+  document.getElementById('weekRange').textContent = getWeekRangeLabel();
+}
+
+// ---------- Init ----------
+async function init(){
+  renderWeekRange();
+  await loadState();
+  renderTasks();
+  renderActualList();
+  buildRewardRows();
+  drawWheel();
+}
+init();
+
+// PWA service worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(err => {
+      console.error('Service Workerの登録に失敗しました', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
