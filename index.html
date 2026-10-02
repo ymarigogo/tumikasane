@@ -661,7 +661,7 @@ function renderActualList(){
     actualList.appendChild(li);
   });
   actualList.querySelectorAll('.done-btn').forEach(b=>{
-    b.addEventListener('click', ()=>{
+    b.addEventListener('click', async ()=>{
       const t = tasks.find(t=>t.id === Number(b.dataset.id));
       if(!t) return;
       const wasDone = t.done;
