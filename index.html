@@ -507,13 +507,24 @@ async function loadHistory(){
 
 async function appendHistory(entry){
   const hist = await loadHistory();
-  hist.push(entry);
+
+  // 同じ週のログがすでにある場合は追加せず、最新の結果で更新する
+  const index = hist.findIndex(h => h.date === entry.date);
+
+  if(index >= 0){
+    hist[index] = entry;
+  } else {
+    hist.push(entry);
+  }
+
   const trimmed = hist.slice(-12);
+
   try{
     localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
   }catch(e){
     console.error('記録の保存に失敗しました', e);
   }
+
   return trimmed;
 }
 
